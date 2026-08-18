@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Workspace - Совместная работа</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ШАПКА -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">◐</span>
+                <span class="logo-text">PAUSE Collab</span>
+            </div>
+            <div class="header-center">
+                <span id="connection-status" class="status disconnected">●</span>
+                <span id="participants-count">0 участников</span>
+            </div>
+            <div class="header-right">
+                <button id="user-btn" class="btn btn-secondary">👤 Гость</button>
+            </div>
+        </header>
+
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
+        <main class="main">
+            <!-- ЛЕВАЯ ПАНЕЛЬ: Список проектов -->
+            <aside class="sidebar-left">
+                <div class="panel-header">
+                    <h3>Проекты</h3>
+                    <button id="new-project-btn" class="btn btn-primary btn-small">+ Новый</button>
+                </div>
+                <div id="projects-list" class="projects-list">
+                    <!-- Проекты загружаются динамически -->
+                    <div class="empty-state">Загрузка...</div>
+                </div>
+            </aside>
+
+            <!-- ЦЕНТРАЛЬНАЯ ПАНЕЛЬ: Редактор -->
+            <section class="editor-panel">
+                <div class="editor-header">
+                    <input type="text" id="project-title" placeholder="Название проекта..." class="title-input">
+                    <div class="editor-actions">
+                        <button id="save-version-btn" class="btn btn-secondary btn-small">💾 Сохранить версию</button>
+                        <button id="analyze-btn" class="btn btn-secondary btn-small">🔍 Анализ</button>
+                        <button id="brainstorm-btn" class="btn btn-accent btn-small">💡 Идеи</button>
+                    </div>
+                </div>
+                
+                <div class="editor-container">
+                    <textarea id="editor" placeholder="Начните писать... Ваши изменения синхронизируются в реальном времени."></textarea>
+                    <div id="cursor-layer" class="cursor-layer"></div>
+                </div>
+
+                <div class="editor-footer">
+                    <span id="word-count">0 слов</span>
+                    <span id="last-saved">Не сохранено</span>
+                </div>
+            </section>
+
+            <!-- ПРАВАЯ ПАНЕЛЬ: Фидбек, версии, чат -->
+            <aside class="sidebar-right">
+                <!-- Табы -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="feedback">💬 Фидбек</button>
+                    <button class="tab-btn" data-tab="versions">📜 Версии</button>
+                    <button class="tab-btn" data-tab="analysis">📊 Анализ</button>
+                    <button class="tab-btn" data-tab="chat">💭 Чат</button>
+                </div>
+
+                <!-- Содержимое табов -->
+                <div class="tab-content">
+                    <!-- ФИДБЕК -->
+                    <div id="tab-feedback" class="tab-panel active">
+                        <div class="panel-actions">
+                            <select id="feedback-type" class="select-small">
+                                <option value="general">💬 Комментарий</option>
+                                <option value="strength">✅ Сильная сторона</option>
+                                <option value="improvement">🔧 Улучшение</option>
+                                <option value="question">❓ Вопрос</option>
+                                <option value="idea">💡 Идея</option>
+                            </select>
+                        </div>
+                        <textarea id="feedback-input" placeholder="Добавьте фидбек..." class="feedback-input"></textarea>
+                        <button id="add-feedback-btn" class="btn btn-primary btn-small">Добавить</button>
+                        
+                        <div id="feedback-list" class="feedback-list">
+                            <div class="empty-state">Фидбеков пока нет</div>
+                        </div>
+                    </div>
+
+                    <!-- ВЕРСИИ -->
+                    <div id="tab-versions" class="tab-panel">
+                        <div id="versions-list" class="versions-list">
+                            <div class="empty-state">Версий пока нет</div>
+                        </div>
+                    </div>
+
+                    <!-- АНАЛИЗ -->
+                    <div id="tab-analysis" class="tab-panel">
+                        <div id="analysis-content" class="analysis-content">
+                            <div class="empty-state">
+                                Нажмите "Анализ" для оценки проекта
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ЧАТ -->
+                    <div id="tab-chat" class="tab-panel">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="system-message">
+                                Добро пожаловать в чат совместной работы!
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chat-input" placeholder="Сообщение..." class="chat-input">
+                            <button id="send-chat-btn" class="btn btn-primary">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- МОДАЛЬНЫЕ ОКНА -->
+        
+        <!-- Новый проект -->
+        <div id="new-project-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Новый проект</h3>
+                <input type="text" id="new-project-title" placeholder="Название проекта">
+                <textarea id="new-project-content" placeholder="Начальный контент (опционально)"></textarea>
+                <div class="modal-actions">
+                    <button id="create-project-btn" class="btn btn-primary">Создать</button>
+                    <button id="cancel-new-project" class="btn btn-secondary">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сохранение версии -->
+        <div id="version-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Сохранить версию</h3>
+                <input type="text" id="version-comment" placeholder="Комментарий к версии...">
+                <div class="modal-actions">
+                    <button id="confirm-save-version" class="btn btn-primary">Сохранить</button>
+                    <button id="cancel-version" class="btn btn-secondary">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ввод имени пользователя -->
+        <div id="user-modal" class="modal">
+            <div class="modal-content">
+                <h3>Представьтесь</h3>
+                <input type="text" id="username-input" placeholder="Ваше имя" value="">
+                <div class="modal-actions">
+                    <button id="set-username-btn" class="btn btn-primary">Войти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

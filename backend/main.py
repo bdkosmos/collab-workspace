@@ -8,6 +8,7 @@ import asyncio
 from typing import Dict, List, Optional, Set
 from datetime import datetime
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
@@ -199,8 +200,19 @@ app = FastAPI(title="Collaborative Workspace", lifespan=lifespan)
 
 # ===== API ENDPOINTS =====
 
+# ===== НАСТРОЙКИ ПУТЕЙ =====
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+# Раздача статики
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+
 @app.get("/")
 async def root():
+    """Главная страница"""
+    index_path = FRONTEND_DIR / "index.html"
+    if index_path.exists():
+        return HTMLResponse(content=index_path.read_text(encoding="utf-8"))
     return {"message": "Collaborative Workspace API", "version": "1.0"}
 
 

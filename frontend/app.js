@@ -5,8 +5,8 @@
 
 // ===== КОНФИГУРАЦИЯ =====
 const CONFIG = {
-    API_URL: 'http://localhost:8000',
-    WS_URL: 'ws://localhost:8000/ws',
+    get API_URL() { return `${window.location.protocol}//${window.location.host}`; },
+    get WS_URL() { return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`; },
     RECONNECT_INTERVAL: 3000,
     SYNC_DEBOUNCE: 300
 };
